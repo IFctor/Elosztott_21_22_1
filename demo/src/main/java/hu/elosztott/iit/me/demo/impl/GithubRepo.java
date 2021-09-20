@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,8 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class GithubRepo implements Repo {
 
-  private final String gitHubSearchRepositoryBaseUrl = "https://api.github.com/search/repositories";
+  private static final String gitHubSearchRepositoryBaseUrl =
+      "https://api.github.com/search/repositories";
 
   private final RestTemplate restTemplate;
 
@@ -25,8 +27,11 @@ public class GithubRepo implements Repo {
     String url = gitHubSearchRepositoryBaseUrl + "?q=" + queryString;
     ResponseEntity<GithubSearchResponseRoot> response =
         restTemplate.getForEntity(url, GithubSearchResponseRoot.class);
-    return response.getBody().getItems().stream()
-        .map(GithubItemDto::getName)
-        .collect(Collectors.toList());
+
+    return (response.getStatusCode() == HttpStatus.OK)
+        ? response.getBody().getItems().stream()
+            .map(GithubItemDto::getName)
+            .collect(Collectors.toList())
+        : new ArrayList<>();
   }
 }
