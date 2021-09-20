@@ -1,11 +1,10 @@
 package hu.elosztott.iit.me.demo.impl;
 
 import hu.elosztott.iit.me.demo.Repo;
+import hu.elosztott.iit.me.demo.RestCommunicationException;
 import hu.elosztott.iit.me.demo.github.GithubItemDto;
 import hu.elosztott.iit.me.demo.github.GithubSearchResponseRoot;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,15 +22,17 @@ public class GithubRepo implements Repo {
   private final RestTemplate restTemplate;
 
   @Override
-  public List<String> searchBytext(String queryString) {
+  public List<String> searchBytext(String queryString) throws RestCommunicationException {
     String url = gitHubSearchRepositoryBaseUrl + "?q=" + queryString;
     ResponseEntity<GithubSearchResponseRoot> response =
         restTemplate.getForEntity(url, GithubSearchResponseRoot.class);
 
-    return (response.getStatusCode() == HttpStatus.OK)
-        ? response.getBody().getItems().stream()
-            .map(GithubItemDto::getName)
-            .collect(Collectors.toList())
-        : new ArrayList<>();
+    if (response.getStatusCode() == HttpStatus.OK) {
+      return response.getBody().getItems().stream()
+          .map(GithubItemDto::getName)
+          .collect(Collectors.toList());
+    } else {
+      throw new RestCommunicationException();
+    }
   }
 }

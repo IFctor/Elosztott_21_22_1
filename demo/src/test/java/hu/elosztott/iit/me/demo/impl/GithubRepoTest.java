@@ -3,10 +3,12 @@ package hu.elosztott.iit.me.demo.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import hu.elosztott.iit.me.demo.RestCommunicationException;
 import hu.elosztott.iit.me.demo.github.GithubItemDto;
 import hu.elosztott.iit.me.demo.github.GithubSearchResponseRoot;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ class GithubRepoTest {
       "https://api.github.com/search/repositories";
 
   @Test
-  void test_searchBytext_ok() {
+  void test_searchBytext_ok() throws RestCommunicationException {
     // GIVEN
     RestTemplate mockRestTemplate = mock(RestTemplate.class);
     GithubRepo repo = new GithubRepo(mockRestTemplate);
@@ -36,7 +38,7 @@ class GithubRepoTest {
     mockRoot.setItems(itemList);
 
     when(mockRestTemplate.getForEntity(
-        gitHubSearchRepositoryBaseUrl + "?q=" + qs, GithubSearchResponseRoot.class))
+            gitHubSearchRepositoryBaseUrl + "?q=" + qs, GithubSearchResponseRoot.class))
         .thenReturn(new ResponseEntity<>(mockRoot, HttpStatus.OK));
 
     // WHEN
@@ -55,15 +57,19 @@ class GithubRepoTest {
     GithubRepo repo = new GithubRepo(mockRestTemplate);
     String qs = "ize";
 
-
     when(mockRestTemplate.getForEntity(
-        gitHubSearchRepositoryBaseUrl + "?q=" + qs, GithubSearchResponseRoot.class))
+            gitHubSearchRepositoryBaseUrl + "?q=" + qs, GithubSearchResponseRoot.class))
         .thenReturn(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
 
     // WHEN
-    List<String> response = repo.searchBytext(qs);
+    try {
+      List<String> response = repo.searchBytext(qs);
+      fail("Exception not thrown");
+    } catch (RestCommunicationException e) {
+      e.printStackTrace();
+    }
+
     // THEN
-    assertThat(response, hasSize(0));
     verify(mockRestTemplate)
         .getForEntity(gitHubSearchRepositoryBaseUrl + "?q=" + qs, GithubSearchResponseRoot.class);
   }
