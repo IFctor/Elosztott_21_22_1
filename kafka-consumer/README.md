@@ -33,12 +33,8 @@ Egy producer-t állítsunk rá a `chat-rooms` topicra (terminálból a konténer
 
 ```
 kafka-console-producer.sh --bootstrap-server :9092 --topic chat-rooms
-
 ```
 
 Az előzőleg megnyitott terminálba írjuk be az üzenetünket
 
-```
-
 Ha jól csináltunk mindent akkor az előzőleg elindított alkalmazás terminálján megjelenik az üzenet
-
