@@ -22,7 +22,17 @@ public class ChatController {
   }
 
   @GetMapping(consumes = "application/json")
-  public Page<ChatMessage> findByMessage(@RequestBody @Valid FindByDto findByDto) {
+  public Page<ChatMessage> findBySender(@RequestBody @Valid FindByDto findByDto) {
     return chatMessageRepository.findBySender(findByDto.getQuery(), PageRequest.of(0, 10));
+  }
+
+  @GetMapping(consumes = "application/json",path = "/smr")
+  public Page<ChatMessage> findBySenderOrMessageOrRoomName(@RequestBody @Valid FindByDto findByDto) {
+    return chatMessageRepository.findBySenderOrMessageOrRoomName(findByDto.getQuery(),findByDto.getQuery(),findByDto.getQuery(), PageRequest.of(0, 10));
+  }
+
+  @GetMapping(consumes = "application/json",path = "/smrlike")
+  public Page<ChatMessage> findBySenderLikeOrMessageLikeOrRoomNameLike(@RequestBody @Valid FindByDto findByDto) {
+    return chatMessageRepository.findBySenderLikeOrMessageLikeOrRoomNameLike(findByDto.getQuery(),findByDto.getQuery(),findByDto.getQuery(), PageRequest.of(0, 10));
   }
 }

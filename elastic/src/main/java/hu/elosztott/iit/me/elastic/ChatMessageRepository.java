@@ -8,5 +8,9 @@ public interface ChatMessageRepository extends ElasticsearchRepository<ChatMessa
 
   Page<ChatMessage> findBySender(String sender, Pageable pageable);
 
-  Page<ChatMessage> findBySenderOrMessage(String sender, String message, Pageable pageable);
+  Page<ChatMessage> findBySenderOrMessageOrRoomName(
+      String sender, String message, String roomName, Pageable pageable);
+
+  Page<ChatMessage> findBySenderLikeOrMessageLikeOrRoomNameLike(
+      String sender, String message, String roomName, Pageable pageable);
 }
