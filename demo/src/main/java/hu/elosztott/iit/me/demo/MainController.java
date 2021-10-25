@@ -33,7 +33,7 @@ public class MainController {
   @RequestMapping(
       value = "/repoSearch",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  List<String> repoSearch(@Valid RepoSearchDto repoSearchDto) {
+  List<String> repoSearch(@Valid RepoSearchDto repoSearchDto) throws RestCommunicationException {
     return repo.searchBytext(repoSearchDto.getQueryString());
   }
 }
